@@ -1,4 +1,4 @@
-package com.tinder.utils;
+package com.tinder.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,8 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DatabaseUtils {
-    private static final String DB_PROPERTIES_FILE = "src/main/resources/configs/dbconfig.properties";
+public class DatabaseUtil {
+    private static final String DB_PROPERTIES_FILE = "src/main/resources/configs/db.properties";
     private static String jdbcURL;
     private static String jdbcUsername;
     private static String jdbcPassword;

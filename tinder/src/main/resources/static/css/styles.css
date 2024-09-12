@@ -16,8 +16,8 @@ body {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 .login-container h2 {
@@ -32,25 +32,28 @@ body {
     font-size: 14px;
 }
 
-.login-container input {
+input {
+    padding: 8px;
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.login-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
+button {
+    padding: 10px 20px;
+    margin: 5px;
     border: none;
-    color: white;
-    font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.login-container button:hover {
-    background-color: #0056b3;
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+button[type="button"] {
+    background-color: #2196F3;
+    color: white;
 }

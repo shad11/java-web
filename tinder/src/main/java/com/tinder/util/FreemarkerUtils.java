@@ -1,7 +1,8 @@
-package com.tinder.utils;
+package com.tinder.util;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,14 +34,6 @@ public class FreemarkerUtils {
     }
 
     public static void render(HttpServletResponse response, String template) {
-        try {
-            Template temp = cfg.getTemplate(template);
-            Writer out = response.getWriter();
-
-            response.setContentType("text/html");
-            temp.process(null, out);
-        } catch (IOException | TemplateException e) {
-            e.printStackTrace();
-        }
+        render(response, template, new HashMap<>());
     }
 }

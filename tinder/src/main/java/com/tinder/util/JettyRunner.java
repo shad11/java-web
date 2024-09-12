@@ -1,4 +1,4 @@
-package com.tinder;
+package com.tinder.util;
 
 import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
@@ -12,7 +12,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.tinder.controller.UserServlet;
 
-public class JettyRun {
+public class JettyRunner {
     public static void main(String[] args) throws Exception {
         Server server = new Server(8080);
 

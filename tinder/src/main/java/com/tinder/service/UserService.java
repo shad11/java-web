@@ -1,17 +1,12 @@
 package com.tinder.service;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.tinder.dao.UserDAO;
+import com.tinder.dao.UserDaoJDBC;
 import com.tinder.model.User;
 
 public class UserService {
-    UserDAO userDAO;
-
-    public UserService(Connection connection) {
-        userDAO = new UserDAO(connection);
-    }
+    UserDaoJDBC userDAO = new UserDaoJDBC();
 
     public User createUser(String email, String password) {
         User user = null;
