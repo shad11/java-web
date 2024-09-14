@@ -6,11 +6,11 @@ document.addEventListener('DOMContentLoaded', function () {
         registerForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
 
-            if (!username || !password || !confirmPassword) {
+            if (!email || !password || !confirmPassword) {
                 alert("Please fill in all fields.");
                 return;
             }
@@ -20,20 +20,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            console.log(email, password);
+
             fetch("/register", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: JSON.stringify({ username, password })
+                body: new URLSearchParams({
+                    email,
+                    password
+                })
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert("Registration successful! Please login to continue.");
-                        window.location.href = "/login";
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert("Registration successful!");
+                        }
                     } else {
-                        alert("Registration failed. Please try again.");
+                        alert(data.msg ? data.msg : "Registration failed. Please try again.");
                     }
                 })
                 .catch(error => {

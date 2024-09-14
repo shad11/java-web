@@ -6,32 +6,40 @@ document.addEventListener('DOMContentLoaded', function () {
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
-            if (username && password) {
-                fetch("/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ username, password })
+            if (!email || !password) {
+                alert("Please enter valid credentials.");
+                return;
+            }
+
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    email,
+                    password
                 })
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert("Login successful!");
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert("Login successful!");
+                        }
                     } else {
-                        alert("Login failed. Please try again.");
+                        alert(data.msg ? data.msg : "Login failed. Please try again.");
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
                     alert("An error occurred. Please try again.");
                 });
-            } else {
-                alert("Please enter valid credentials.");
-            }
         });
     }
 

@@ -25,6 +25,11 @@ public class UserDaoJDBC implements UserDAO {
 
         if (resultSet.next()) {
             id = resultSet.getInt(1);
+        } else {
+            resultSet.close();
+            preparedStatement.close();
+
+            throw new SQLException("Creating user failed, no ID obtained.");
         }
 
         resultSet.close();
@@ -49,9 +54,8 @@ public class UserDaoJDBC implements UserDAO {
                     resultSet.getInt("id"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
-                    resultSet.getString("nick"), 
-                    resultSet.getString("img_link")
-                );
+                    resultSet.getString("nick"),
+                    resultSet.getString("imgLink"));
         }
 
         resultSet.close();

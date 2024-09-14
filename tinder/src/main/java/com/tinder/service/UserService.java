@@ -8,38 +8,22 @@ import com.tinder.model.User;
 public class UserService {
     UserDaoJDBC userDAO = new UserDaoJDBC();
 
-    public User createUser(String email, String password) {
+    public User createUser(String email, String password) throws SQLException {
         User user = null;
+        
+        user = new User(email, password);
 
-        try {
-            user = new User(email, password);
-
-            int id = userDAO.create(user);
-            user.setId(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        int id = userDAO.create(user);
+        user.setId(id);
 
         return user;
     }
 
-    public User getUser(String email, String password) {
-        User user = null;
-
-        try {
-            user = userDAO.get(email, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return user;
+    public User getUser(String email, String password) throws SQLException {
+        return userDAO.get(email, password);
     }
 
-    public void updateUser(User user) {
-        try {
-            userDAO.update(user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void updateUser(User user) throws SQLException {
+        userDAO.update(user);
     }
 }

@@ -26,7 +26,7 @@ public class JettyRunner {
         staticContext.setHandler(resourceHandler);
 
         // ContextHandler for dynamic content (servlets)
-        ServletContextHandler dynamicHandler = new ServletContextHandler();
+        ServletContextHandler dynamicHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         dynamicHandler.setContextPath("/");
 
         dynamicHandler.addServlet(new ServletHolder(new UserServlet()), "/login");
