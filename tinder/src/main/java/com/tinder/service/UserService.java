@@ -19,6 +19,10 @@ public class UserService {
         return user;
     }
 
+    public User getUser(String email) throws SQLException {
+        return userDAO.get(email);
+    }
+
     public User getUser(String email, String password) throws SQLException {
         return userDAO.get(email, password);
     }

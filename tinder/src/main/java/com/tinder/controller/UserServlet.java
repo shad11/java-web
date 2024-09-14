@@ -66,18 +66,24 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-            User user = userService.getUser(email, password);
+            User user;
+
+            user = userService.getUser(email, password);
 
             if (user != null) {
                 // TODO: Save into Cookie / Session
                 // response.sendRedirect(request.getContextPath() + "/users");
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": true, \"redirect\": \"/users\"}");
+                sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
             } else {
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"msg\": \"User not found\"}");
+                user = userService.getUser(email); 
+                
+                if (user != null) {
+                    sendJsonResponse(response, "{\"success\": false, \"msg\": \"Invalid password\"}");
+                } else {
+                    sendJsonResponse(response, "{\"success\": false, \"msg\": \"User not found\"}");
+                }
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
 
             response.setStatus(500);
@@ -89,37 +95,44 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-            User user = userService.createUser(email, password);
+
+            User user;
+            user = userService.getUser(email);
+
+            if (user != null) {
+                sendJsonResponse(response, "{\"success\": false, \"msg\": \"User already registered\"}");
+                return;
+            }
+
+            user = userService.createUser(email, password);
 
             if (user != null) {
                 // TODO: Save into Cookie / Session
                 // request.getSession().setAttribute("user", user);
                 // response.sendRedirect(request.getContextPath() + "/users");
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": true, \"redirect\": \"/users\"}");
+                sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
             } else {
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"msg\": \"User not registered\"}");
+                sendJsonResponse(response, "{\"success\": false, \"msg\": \"User not registered\"}");
             }
         } catch (SQLException e) {
             e.printStackTrace();
 
-            try {
-                response.setContentType("application/json");
-                response.getWriter().write("{\"success\": false, \"msg\": " + e.getMessage() + "}");
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-
-                response.setStatus(500);
-            }
-        } catch (IOException | IllegalStateException e) {
-            e.printStackTrace();
-
-            response.setStatus(500);
+            sendJsonResponse(response, "{\"success\": false, \"msg\": " + e.getMessage() + "}");
         }
     }
 
     private void renderTemplate(HttpServletResponse response, String template) {
         FreemarkerUtil.render(response, template);
+    }
+
+    private void sendJsonResponse(HttpServletResponse response, String json) {
+        response.setContentType("application/json");
+        try {
+            response.getWriter().write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            response.setStatus(500);
+        }
     }
 }

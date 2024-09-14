@@ -64,6 +64,31 @@ public class UserDaoJDBC implements UserDAO {
         return user;
     }
 
+    public User get(String email) throws SQLException {
+        User user = null;
+        String query = "SELECT * FROM users WHERE email = ?";
+        Connection connection = getConnection();
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, email);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            user = new User(
+                    resultSet.getInt("id"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("nick"),
+                    resultSet.getString("imgLink"));
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+
+        return user;
+    }
+
     public void update(User user) throws SQLException {
         String query = "UPDATE users SET email = ?, password = ?, nick = ?, img_link = ? WHERE id = ?";
         Connection connection = getConnection();
