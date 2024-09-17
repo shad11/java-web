@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            console.log(email, password);
-
             fetch("/register", {
                 method: "POST",
                 headers: {
