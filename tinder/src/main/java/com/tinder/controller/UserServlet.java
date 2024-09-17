@@ -2,16 +2,22 @@ package com.tinder.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tinder.exception.UserValidationException;
 import com.tinder.model.User;
 import com.tinder.service.UserService;
-import com.tinder.util.FreemarkerUtil;
+import com.tinder.util.CookieHelper;
+import com.tinder.util.TemplateEngine;
 
+@WebServlet(urlPatterns = { "/login", "/register", "/profile", "/users" })
 public class UserServlet extends HttpServlet {
     private UserService userService;
 
@@ -28,16 +34,13 @@ public class UserServlet extends HttpServlet {
 
         switch (path) {
             case "/login" -> {
-                renderTemplate(response, "user/login.ftl");
+                renderTemplate(response, "user/login.ftl", null);
             }
             case "/register" -> {
-                renderTemplate(response, "user/register.ftl");
-            }
-            case "/profile" -> {
-                renderTemplate(response, "user/profile.ftl");
+                renderTemplate(response, "user/register.ftl", null);
             }
             case "/users" -> {
-                renderTemplate(response, "user/users.ftl");
+                showUsers(request, response);
             }
             default -> {
             }
@@ -55,8 +58,11 @@ public class UserServlet extends HttpServlet {
             case "/register" -> {
                 registerUser(request, response);
             }
+            case "/liked" -> {
+                likeUser(request, response);
+            }
             default -> {
-                renderTemplate(response, "user/users.ftl");
+                showUsers(request, response);
             }
         }
     }
@@ -66,23 +72,16 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-            User user;
+            User user = userService.loginUser(email, password);
 
-            user = userService.getUser(email, password);
+            CookieHelper.setEmail(response, user.getEmail());
 
-            if (user != null) {
-                // TODO: Save into Cookie / Session
-                // response.sendRedirect(request.getContextPath() + "/users");
-                sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
-            } else {
-                user = userService.getUser(email); 
-                
-                if (user != null) {
-                    sendJsonResponse(response, "{\"success\": false, \"msg\": \"Invalid password\"}");
-                } else {
-                    sendJsonResponse(response, "{\"success\": false, \"msg\": \"User not found\"}");
-                }
-            }
+            // response.sendRedirect(request.getContextPath() + "/users");
+            sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
+        } catch (UserValidationException e) {
+            e.printStackTrace();
+
+            sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
         } catch (SQLException e) {
             e.printStackTrace();
 
@@ -96,33 +95,61 @@ public class UserServlet extends HttpServlet {
 
         try {
 
-            User user;
-            user = userService.getUser(email);
+            User user = userService.createUser(email, password);
 
-            if (user != null) {
-                sendJsonResponse(response, "{\"success\": false, \"msg\": \"User already registered\"}");
-                return;
-            }
+            CookieHelper.setEmail(response, user.getEmail());
 
-            user = userService.createUser(email, password);
+            // response.sendRedirect(request.getContextPath() + "/users");
+            sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
+        } catch (UserValidationException e) {
+            e.printStackTrace();
 
-            if (user != null) {
-                // TODO: Save into Cookie / Session
-                // request.getSession().setAttribute("user", user);
-                // response.sendRedirect(request.getContextPath() + "/users");
-                sendJsonResponse(response, "{\"success\": true, \"redirect\": \"/users\"}");
-            } else {
-                sendJsonResponse(response, "{\"success\": false, \"msg\": \"User not registered\"}");
-            }
+            sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
         } catch (SQLException e) {
             e.printStackTrace();
 
-            sendJsonResponse(response, "{\"success\": false, \"msg\": " + e.getMessage() + "}");
+            sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    private void renderTemplate(HttpServletResponse response, String template) {
-        FreemarkerUtil.render(response, template);
+    private void showUsers(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String userEmail = CookieHelper.getEmail(request);
+            List<User> users = userService.getAllUsers(userEmail);
+
+            Map<String, Object> data = Map.of("users", users);
+
+            renderTemplate(response, "user/users.ftl", data);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setStatus(500);
+        }
+    }
+
+    private void likeUser(HttpServletRequest request, HttpServletResponse response) {
+        String userId = request.getParameter("userId");
+        String userEmail = CookieHelper.getEmail(request);
+
+        try {
+            User user = userService.getUser(userEmail);
+
+            userService.likeUser(user, Integer.parseInt(userId));
+
+            sendJsonResponse(response, "{\"success\": true}");
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private void renderTemplate(HttpServletResponse response, String template, Map<String, Object> data) {
+        if (data == null || data.isEmpty()) {
+            TemplateEngine.render(response, template);
+        } else {
+            TemplateEngine.render(response, template, data);
+        }
     }
 
     private void sendJsonResponse(HttpServletResponse response, String json) {

@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DatabaseUtil {
+public class DBConnector {
     private static final String DB_PROPERTIES_FILE = "src/main/resources/configs/db.properties";
     private static String jdbcURL;
     private static String jdbcUsername;

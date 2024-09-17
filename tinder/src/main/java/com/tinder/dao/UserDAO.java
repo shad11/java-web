@@ -5,15 +5,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.tinder.model.User;
-import com.tinder.util.DatabaseUtil;
+import com.tinder.util.DBConnector;
 
 public interface UserDAO {
     public int create(User user) throws SQLException;
-    public User get(String email, String password) throws SQLException;
+    public User get(String email) throws SQLException;
     public void update(User user) throws SQLException;
+    public void updateLikedUsers(User user, String linkedUser) throws SQLException;
     public List<User> getAll() throws SQLException;
 
     default Connection getConnection() {
-        return DatabaseUtil.connect();
+        return DBConnector.connect();
     }
 }

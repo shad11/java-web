@@ -1,5 +1,9 @@
 package com.tinder.util;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.server.Handler;
@@ -7,9 +11,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.tinder.controller.AuthenticationFilter;
 import com.tinder.controller.UserServlet;
 
 public class JettyRunner {
@@ -29,9 +34,16 @@ public class JettyRunner {
         ServletContextHandler dynamicHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         dynamicHandler.setContextPath("/");
 
-        dynamicHandler.addServlet(new ServletHolder(new UserServlet()), "/login");
-        dynamicHandler.addServlet(new ServletHolder(new UserServlet()), "/register");
-        dynamicHandler.addServlet(new ServletHolder(new UserServlet()), "/users");
+        // Register the filter
+        FilterHolder filterHolder = new FilterHolder(new AuthenticationFilter());
+
+        dynamicHandler.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
+
+        // Add endpoints
+        dynamicHandler.addServlet(UserServlet.class, "/login");
+        dynamicHandler.addServlet(UserServlet.class, "/register");
+        dynamicHandler.addServlet(UserServlet.class, "/users");
+        dynamicHandler.addServlet(UserServlet.class, "/liked");
 
         // RewriteHandler to redirect root to /users
         // If not redirected, the default behavior is to serve static content by showing the directory listing or 403 if listing is disabled

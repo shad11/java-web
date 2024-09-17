@@ -12,11 +12,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
-public class FreemarkerUtil {
+public class TemplateEngine {
     private static final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
     static {
-        cfg.setClassForTemplateLoading(FreemarkerUtil.class, "/templates");
+        cfg.setClassForTemplateLoading(TemplateEngine.class, "/templates");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
