@@ -94,7 +94,6 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-
             User user = userService.createUser(email, password);
 
             CookieHelper.setEmail(response, user.getEmail());

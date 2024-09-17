@@ -14,9 +14,7 @@ public class UserService {
     UserDaoJDBC userDAO = new UserDaoJDBC();
 
     public User createUser(String email, String password) throws SQLException, UserValidationException {
-        User user = null;
-
-        user = userDAO.get(email);
+        User user = userDAO.get(email);
 
         if (user != null) {
             throw new UserValidationException("User already registered!");
@@ -69,7 +67,7 @@ public class UserService {
                                     .collect(Collectors.joining(","));
 
             userDAO.updateLikedUsers(user, likedUsersString);
-            
+
             user.setLikedUsers(likedUsers);
         }
     }
