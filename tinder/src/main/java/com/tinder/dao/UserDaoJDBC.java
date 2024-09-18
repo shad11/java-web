@@ -66,6 +66,28 @@ public class UserDaoJDBC implements UserDAO {
     }
 
     @Override
+    public User get(int id) throws SQLException {
+        User user = null;
+        Connection connection = getConnection();
+
+        String query = "SELECT * FROM users WHERE id = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            user = getUserFromResultSet(resultSet);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+
+        return user;
+    }
+
+    @Override
     public void update(User user) throws SQLException {
         Connection connection = getConnection();
 

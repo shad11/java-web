@@ -28,6 +28,12 @@
 </head>
 <body>
     <div class="container mt-5">
+        <div class="d-flex justify-content-start mb-4">
+            <a href="/liked" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Liked Users
+            </a>
+        </div>
+
         <h2 class="text-center">User List</h2>
         <!-- Carousel Slider -->
         <div id="userCarousel" class="carousel slide" data-bs-ride="carousel">

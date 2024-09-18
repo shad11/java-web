@@ -15,6 +15,7 @@ import com.tinder.exception.UserValidationException;
 import com.tinder.model.User;
 import com.tinder.service.UserService;
 import com.tinder.util.CookieHelper;
+import com.tinder.util.RequestHelper;
 import com.tinder.util.TemplateEngine;
 
 @WebServlet(urlPatterns = { "/login", "/register", "/profile", "/users" })
@@ -42,6 +43,9 @@ public class UserServlet extends HttpServlet {
             case "/users" -> {
                 showUsers(request, response);
             }
+            case "/liked" -> {
+                showLikedUsers(request, response);
+            }
             default -> {
             }
         }
@@ -59,11 +63,23 @@ public class UserServlet extends HttpServlet {
                 registerUser(request, response);
             }
             case "/liked" -> {
-                likeUser(request, response);
+                processUserLikeDislike(request, response, true);
             }
             default -> {
                 showUsers(request, response);
             }
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        String path = request.getRequestURI();
+
+        switch (path) {
+            case "/liked" -> {
+                processUserLikeDislike(request, response, false);
+            }
+            default -> {}
         }
     }
 
@@ -126,20 +142,60 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    private void likeUser(HttpServletRequest request, HttpServletResponse response) {
+    private void processUserLikeDislike(HttpServletRequest request, HttpServletResponse response, boolean like) {
         String userId = request.getParameter("userId");
+
+        if (userId == null) {
+            try {
+                Map<String, String> params = RequestHelper.getParametersFromBody(request);
+
+                userId = params.get("userId");
+            } catch (IOException e) {
+                e.printStackTrace();
+
+                sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+            }
+        }
+
+        if (userId == null) {
+            sendJsonResponse(response, "{\"success\": false, \"msg\": \"Liked userId is required\"}");
+
+            return;
+        }
+        
         String userEmail = CookieHelper.getEmail(request);
 
         try {
             User user = userService.getUser(userEmail);
 
-            userService.likeUser(user, Integer.parseInt(userId));
+            if (like) {
+                userService.likeUser(user, Integer.parseInt(userId));
+            } else {
+                userService.dislikeUser(user, Integer.parseInt(userId));
+            }
 
             sendJsonResponse(response, "{\"success\": true}");
         } catch (SQLException e) {
             e.printStackTrace();
 
             sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private void showLikedUsers(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String userEmail = CookieHelper.getEmail(request);
+            User user = userService.getUser(userEmail);
+
+            List<User> likedUsers = userService.getLikedUsers(user);
+
+            Map<String, Object> data = Map.of("users", likedUsers);
+
+            renderTemplate(response, "user/likedUsers.ftl", data);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            response.setStatus(500);
         }
     }
 

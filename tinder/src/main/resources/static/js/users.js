@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const likeButtons = document.querySelectorAll('.like-btn');
+    const likeRemoveButtons = document.querySelectorAll('.like-remove-btn');
+    const messageButtons = document.querySelectorAll('.message-btn');
 
     likeButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -45,6 +47,44 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error("Error:", error);
                     alert('Error occurred while liking the user.');
                 });
+        });
+    });
+
+    likeRemoveButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-user-id');
+            const userElement = document.getElementById(`user-${userId}`);
+
+            fetch('/liked', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the user from the list
+                    userElement.remove();
+                } else {
+                    alert(data.msg ? data.msg : "Failed to remove user from likes. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error occurred while removing the user.');
+            });
+        });
+    });
+
+    messageButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-user-id');
+            
+            alert(`TODO: Messaging user with ID: ${userId}`);
         });
     });
 });

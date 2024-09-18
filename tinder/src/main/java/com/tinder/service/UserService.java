@@ -72,6 +72,35 @@ public class UserService {
         }
     }
 
+    public void dislikeUser(User user, int dislikedUserId) throws SQLException {
+        List<Integer> likedUsers = new ArrayList<>(user.getLikedUsers());
+
+        likedUsers.removeIf(id -> id == dislikedUserId);
+
+        String likedUsersString = likedUsers.stream()
+                                .map(String::valueOf)
+                                .collect(Collectors.joining(","));
+
+        userDAO.updateLikedUsers(user, likedUsersString);
+
+        user.setLikedUsers(likedUsers);
+    }
+
+    public List<User> getLikedUsers(User user) throws SQLException {
+        List<User> likedUsers = new ArrayList<>();
+        List<Integer> likedUsersIds = user.getLikedUsers();
+
+        if (likedUsersIds.isEmpty()) {
+            return likedUsers;
+        }
+
+        for (int id : likedUsersIds) {
+            likedUsers.add(userDAO.get(id));
+        }
+
+        return likedUsers;
+    }
+
     public void updateUser(User user) throws SQLException {
         userDAO.update(user);
     }
