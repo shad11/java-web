@@ -42,6 +42,7 @@ public class JettyRunner {
         // Add endpoints
         dynamicHandler.addServlet(UserServlet.class, "/login");
         dynamicHandler.addServlet(UserServlet.class, "/register");
+        dynamicHandler.addServlet(UserServlet.class, "/logout");
         dynamicHandler.addServlet(UserServlet.class, "/users");
         dynamicHandler.addServlet(UserServlet.class, "/liked");
 

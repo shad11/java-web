@@ -28,9 +28,13 @@
 </head>
 <body>
     <div class="container mt-5">
-        <div class="d-flex justify-content-start mb-4">
+        <div class="d-flex justify-content-between mb-4">
             <a href="/liked" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Liked Users
+            </a>
+
+            <a href="/logout" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Logout
             </a>
         </div>
 

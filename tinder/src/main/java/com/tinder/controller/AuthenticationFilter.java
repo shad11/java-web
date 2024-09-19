@@ -22,7 +22,13 @@ public class AuthenticationFilter implements Filter {
 
         String path = req.getRequestURI();
 
-        if (path.equals("/login") || path.equals("/register") || path.startsWith("/static")) {
+        if (path.equals("/login") || path.equals("/register")) {
+            if (CookieHelper.getEmail(req) != null) {
+                res.sendRedirect(req.getContextPath() + "/users");
+            } else {
+                chain.doFilter(request, response);
+            }
+        } else if (path.startsWith("/static")) {
             chain.doFilter(request, response);
         } else if (CookieHelper.getEmail(req) != null) {
             chain.doFilter(request, response);

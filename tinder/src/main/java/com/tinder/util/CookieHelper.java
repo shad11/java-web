@@ -11,7 +11,8 @@ public class CookieHelper {
 
     public static void setCookie(HttpServletResponse response, String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        // cookie.setDomain("tinder.com");
+
+        // cookie.setPath("/"); // Cookie is accessible from all paths
         cookie.setMaxAge(60 * 60 * 24 * 7); // Cookie will last for 7 days
         response.addCookie(cookie);
     }
@@ -32,7 +33,9 @@ public class CookieHelper {
     }
 
     public static void deleteCookie(HttpServletResponse response, String key) {
-        Cookie cookie = new Cookie(key, "");
+        Cookie cookie = new Cookie(key, null);
+
+        // cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }

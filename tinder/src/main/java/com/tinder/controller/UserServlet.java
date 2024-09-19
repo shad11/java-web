@@ -18,7 +18,7 @@ import com.tinder.util.CookieHelper;
 import com.tinder.util.RequestHelper;
 import com.tinder.util.TemplateEngine;
 
-@WebServlet(urlPatterns = { "/login", "/register", "/profile", "/users" })
+@WebServlet(urlPatterns = { "/login", "/register", "/logout", "/profile", "/users" })
 public class UserServlet extends HttpServlet {
     private UserService userService;
 
@@ -45,6 +45,9 @@ public class UserServlet extends HttpServlet {
             }
             case "/liked" -> {
                 showLikedUsers(request, response);
+            }
+            case "/logout" -> {
+                logoutUser(request, response);
             }
             default -> {
             }
@@ -124,6 +127,16 @@ public class UserServlet extends HttpServlet {
             e.printStackTrace();
 
             sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private void logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        CookieHelper.deleteEmail(response);
+
+        try {
+            response.sendRedirect(request.getContextPath() + "/login");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
