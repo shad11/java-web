@@ -7,7 +7,6 @@ public class Message {
     private String message;
     private String timestamp;
 
-    // Constructor
     public Message(int id, int senderId, int receiverId, String message, String timestamp) {
         this.id = id;
         this.senderId = senderId;
@@ -16,7 +15,12 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    // Getters and Setters
+    public Message(int senderId, int receiverId, String message) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.message = message;
+    }
+    
     public int getId() {
         return id;
     }

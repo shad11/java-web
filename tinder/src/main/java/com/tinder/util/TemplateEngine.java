@@ -18,15 +18,18 @@ public class TemplateEngine {
     static {
         cfg.setClassForTemplateLoading(TemplateEngine.class, "/templates");
         cfg.setDefaultEncoding("UTF-8");
+        cfg.setOutputEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
     public static void render(HttpServletResponse response, String template, Map<String, Object> data) {
         try {
+            response.setContentType("text/html; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+
             Template temp = cfg.getTemplate(template);
             Writer out = response.getWriter();
 
-            response.setContentType("text/html");
             temp.process(data, out);
         } catch (IOException | TemplateException e) {
             e.printStackTrace();

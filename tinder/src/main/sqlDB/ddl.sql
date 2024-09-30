@@ -1,5 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `tinder`;
 
+USE `tinder`;
+
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,

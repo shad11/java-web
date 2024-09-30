@@ -1,6 +1,6 @@
-USE users;
+USE `tinder`;
 
-INSERT INTO users (email, password, nick, imgLink) VALUES
+INSERT INTO `users` (email, password, nick, imgLink) VALUES
 ('jane.doe@example.com', 'password123', 'JaneDoe', 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'),
 ('john.smith@example.com', 'pass1234', 'JohnSmith', 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'),
 ('alice.wonder@example.com', 'alice2024', 'AliceWonder', 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg'),

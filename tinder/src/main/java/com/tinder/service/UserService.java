@@ -11,7 +11,7 @@ import com.tinder.model.User;
 import com.tinder.util.PasswordHelper;
 
 public class UserService {
-    UserDaoJDBC userDAO = new UserDaoJDBC();
+    private final UserDaoJDBC userDAO = new UserDaoJDBC();
 
     public User createUser(String email, String password) throws SQLException, UserValidationException {
         User user = userDAO.get(email);
@@ -46,11 +46,11 @@ public class UserService {
         return userDAO.get(email);
     }
 
-    public List<User> getAllUsers(String userEmail) throws SQLException {
+    public List<User> getAllUsers(User currentUser) throws SQLException {
         List<User> users = userDAO.getAll();
 
-        if (userEmail != null) {
-            users.removeIf(user -> user.getEmail().equals(userEmail));
+        if (currentUser != null) {
+            users.removeIf(user -> user.getId() == currentUser.getId() || currentUser.getLikedUsers().contains(user.getId()));
         }
 
         return users;

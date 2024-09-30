@@ -10,7 +10,6 @@ public class User {
     private String imgLink;
     private List<Integer> likedUsers;
 
-    // Constructor
     public User(int id, String email, String password, String nick, String imgLink, List<Integer> likedUsers) {
         this.id = id;
         this.email = email;
@@ -25,7 +24,6 @@ public class User {
         this.password = password;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

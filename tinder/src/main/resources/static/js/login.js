@@ -1,6 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById("loginForm");
     const registerBtn = document.getElementById("registerBtn");
+    const errorMessages = document.getElementById("errorMessages");
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Minimum 8 characters, at least one letter and one number
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    const showError = function (message) {
+        errorMessages.innerHTML = message;
+        errorMessages.classList.remove('d-none');
+    }
 
     if (loginForm) {
         loginForm.addEventListener("submit", function (event) {
@@ -9,8 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
-            if (!email || !password) {
-                alert("Please enter valid credentials.");
+            // Clear previous errors
+            errorMessages.innerHTML = '';
+            errorMessages.classList.add('d-none');
+
+            if (!email || !emailPattern.test(email)) {
+                showError("Please enter a valid email address.");
+                return;
+            }
+
+            if (!password || !passwordPattern.test(password)) {
+                showError("Password must be at least 8 characters long and contain both letters and numbers.");
                 return;
             }
 
@@ -33,19 +52,18 @@ document.addEventListener('DOMContentLoaded', function () {
                             alert("Login successful!");
                         }
                     } else {
-                        alert(data.msg ? data.msg : "Login failed. Please try again.");
+                        showError(data.msg ? data.msg : "Login failed. Please try again.");
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("An error occurred. Please try again.");
+                    showError("An error occurred. Please try again.");
                 });
         });
     }
 
     if (registerBtn) {
         registerBtn.addEventListener("click", function () {
-            // Simulate navigation to the register page
             window.location.href = "/register";
         });
     }

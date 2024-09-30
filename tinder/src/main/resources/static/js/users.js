@@ -83,8 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
     messageButtons.forEach(button => {
         button.addEventListener('click', function () {
             const userId = this.getAttribute('data-user-id');
-            
-            alert(`TODO: Messaging user with ID: ${userId}`);
+
+            window.location.href = `/messages/${userId}`;
         });
     });
+
 });
