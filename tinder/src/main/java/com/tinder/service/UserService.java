@@ -1,19 +1,19 @@
 package com.tinder.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.tinder.dao.UserDaoJDBC;
+import com.tinder.dao.UserDAO;
+import com.tinder.dao.UserDaoImpl;
+import com.tinder.exception.DataBaseException;
 import com.tinder.exception.UserValidationException;
 import com.tinder.model.User;
 import com.tinder.util.PasswordHelper;
 
 public class UserService {
-    private final UserDaoJDBC userDAO = new UserDaoJDBC();
+    private final UserDAO userDAO = new UserDaoImpl();
 
-    public User createUser(String email, String password) throws SQLException, UserValidationException {
+    public User createUser(String email, String password) throws UserValidationException, DataBaseException {
         User user = userDAO.get(email);
 
         if (user != null) {
@@ -22,13 +22,12 @@ public class UserService {
         
         user = new User(email, PasswordHelper.hashPassword(password));
 
-        int id = userDAO.create(user);
-        user.setId(id);
+        userDAO.create(user);
 
         return user;
     }
 
-    public User loginUser(String email, String password) throws SQLException, UserValidationException {
+    public User loginUser(String email, String password) throws UserValidationException, DataBaseException {
         User user = userDAO.get(email);
 
         if (user == null) {
@@ -42,11 +41,11 @@ public class UserService {
         return user;
     }
 
-    public User getUser(String email) throws SQLException {
+    public User getUser(String email) throws DataBaseException {
         return userDAO.get(email);
     }
 
-    public List<User> getAllUsers(User currentUser) throws SQLException {
+    public List<User> getAllUsers(User currentUser) throws DataBaseException {
         List<User> users = userDAO.getAll();
 
         if (currentUser != null) {
@@ -56,37 +55,27 @@ public class UserService {
         return users;
     }
 
-    public void likeUser(User user, int likedUserId) throws SQLException {
+    public void likeUser(User user, int likedUserId) throws DataBaseException {
         List<Integer> likedUsers = new ArrayList<>(user.getLikedUsers());
 
         if (!likedUsers.contains(likedUserId)) {
             likedUsers.add(likedUserId);
 
-            String likedUsersString = likedUsers.stream()
-                                    .map(String::valueOf)
-                                    .collect(Collectors.joining(","));
-
-            userDAO.updateLikedUsers(user, likedUsersString);
-
             user.setLikedUsers(likedUsers);
+            userDAO.update(user);
         }
     }
 
-    public void dislikeUser(User user, int dislikedUserId) throws SQLException {
+    public void dislikeUser(User user, int dislikedUserId) throws DataBaseException {
         List<Integer> likedUsers = new ArrayList<>(user.getLikedUsers());
 
         likedUsers.removeIf(id -> id == dislikedUserId);
 
-        String likedUsersString = likedUsers.stream()
-                                .map(String::valueOf)
-                                .collect(Collectors.joining(","));
-
-        userDAO.updateLikedUsers(user, likedUsersString);
-
         user.setLikedUsers(likedUsers);
+        userDAO.update(user);
     }
 
-    public List<User> getLikedUsers(User user) throws SQLException {
+    public List<User> getLikedUsers(User user) throws DataBaseException {
         List<User> likedUsers = new ArrayList<>();
         List<Integer> likedUsersIds = user.getLikedUsers();
 
@@ -101,7 +90,7 @@ public class UserService {
         return likedUsers;
     }
 
-    public void updateUser(User user) throws SQLException {
+    public void updateUser(User user) throws DataBaseException {
         userDAO.update(user);
     }
 }

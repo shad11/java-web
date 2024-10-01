@@ -1,21 +1,22 @@
 package com.tinder.service;
 
-import com.tinder.dao.MessageDAO;
-import com.tinder.dao.MessagesDaoJDBC;
-import com.tinder.model.Message;
-import java.sql.SQLException;
 import java.util.List;
 
-public class MessageService {
-    private final MessageDAO messageDAO = new MessagesDaoJDBC();
+import com.tinder.dao.MessageDAO;
+import com.tinder.dao.MessageDaoImpl;
+import com.tinder.exception.DataBaseException;
+import com.tinder.model.Message;
 
-    public void createMessage(int senderId, int receiverId, String text) throws SQLException {
+public class MessageService {
+    private final MessageDAO messageDAO = new MessageDaoImpl();
+
+    public void createMessage(int senderId, int receiverId, String text) throws DataBaseException {
         Message message = new Message(senderId, receiverId, text);
 
         messageDAO.create(message);
     }
 
-    public List<Message> getAllMessages(int senderId, int receiverId) throws SQLException {
+    public List<Message> getAllMessages(int senderId, int receiverId) throws DataBaseException {
         return messageDAO.getAll(senderId, receiverId);
     }
 }

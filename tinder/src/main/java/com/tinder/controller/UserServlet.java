@@ -1,7 +1,6 @@
 package com.tinder.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tinder.exception.DataBaseException;
 import com.tinder.exception.UserValidationException;
 import com.tinder.model.User;
 import com.tinder.service.UserService;
-import com.tinder.util.*;
+import com.tinder.util.CookieHelper;
+import com.tinder.util.RequestHelper;
+import com.tinder.util.ResponseHelper;
+import com.tinder.util.TemplateEngine;
+import com.tinder.util.ValidationHelper;
 
 @WebServlet(urlPatterns = { "/login", "/register", "/logout", "/profile", "/users" })
 public class UserServlet extends HttpServlet {
@@ -108,10 +112,8 @@ public class UserServlet extends HttpServlet {
         } catch (UserValidationException e) {
             // e.printStackTrace();
             ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            response.setStatus(500);
+        } catch (DataBaseException e) {
+            ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"DB error...\"}");
         }
     }
 
@@ -139,10 +141,8 @@ public class UserServlet extends HttpServlet {
         } catch (UserValidationException e) {
             // e.printStackTrace();
             ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+        } catch (DataBaseException e) {
+            ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"DB error...\"}");
         }
     }
 
@@ -164,6 +164,8 @@ public class UserServlet extends HttpServlet {
             Map<String, Object> data = Map.of("users", users);
 
             TemplateEngine.render(response, "users.ftl", data);
+        } catch (DataBaseException e) {
+            ResponseHelper.showErrorPage(response, "DB error...");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -202,10 +204,8 @@ public class UserServlet extends HttpServlet {
             }
 
             ResponseHelper.sendJsonResponse(response, "{\"success\": true}");
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"" + e.getMessage() + "\"}");
+        } catch (DataBaseException e) {
+            ResponseHelper.sendJsonResponse(response, "{\"success\": false, \"msg\": \"DB error...\"}");
         }
     }
 

@@ -1,13 +1,18 @@
 package com.tinder.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tinder.exception.DataBaseException;
 import com.tinder.model.User;
 import com.tinder.service.UserService;
 import com.tinder.util.CookieHelper;
@@ -24,7 +29,8 @@ public class AuthenticationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         String email;
@@ -40,19 +46,19 @@ public class AuthenticationFilter implements Filter {
         } else if (path.startsWith("/static")) {
             chain.doFilter(request, response);
         } else if ((email = CookieHelper.getEmail(req)) != null) {
+            User user = null;
+
             try {
-                User user = userService.getUser(email);
-
-                if (user == null) {
-                    res.sendRedirect(req.getContextPath() + "/login");
-                } else {
-                    req.setAttribute("user", user);
-                    chain.doFilter(request, response);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-
+                user = userService.getUser(email);
+            } catch (DataBaseException e) {
                 res.sendRedirect(req.getContextPath() + "/login");
+            }
+
+            if (user == null) {
+                res.sendRedirect(req.getContextPath() + "/login");
+            } else {
+                req.setAttribute("user", user);
+                chain.doFilter(request, response);
             }
         } else {
             res.sendRedirect(req.getContextPath() + "/login");

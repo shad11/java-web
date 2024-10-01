@@ -2,21 +2,40 @@ package com.tinder.model;
 
 import java.util.List;
 
-public class User {
-    private int id;
-    private String email;
-    private String password;
-    private String nick;
-    private String imgLink;
-    private List<Integer> likedUsers;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-    public User(int id, String email, String password, String nick, String imgLink, List<Integer> likedUsers) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.nick = nick;
-        this.imgLink = imgLink;
-        this.likedUsers = likedUsers;
+import com.tinder.util.CommaDelimitedStringToIntegerListConverter;
+
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "nick")
+    private String nick;
+
+    @Column(name = "imgLink")
+    private String imgLink;
+
+    @Column(name = "likedUsers")
+    @Convert(converter = CommaDelimitedStringToIntegerListConverter.class)
+    private List<Integer> likedUsers;
+    
+    public User() {
     }
 
     public User(String email, String password) {
